@@ -1,0 +1,37 @@
+import os 
+import glob
+from PIL import Image
+import numpy as np
+from sklearn.model_selection import train_test_split
+#ls drive/MyDrive/Spill_Data/Spill_Data/Train/NoSpill
+mother_path = 'drive/MyDrive/Spill_Data/Spill_Data/Train/'
+folders=os.listdir(mother_path)
+x = []
+y = []
+for i in folders:
+  if 'No' in i:
+    label = 0 # spill X
+  else :
+    label = 1 # spill
+  files=glob.glob(os.path.join(mother_path,i)+'/*')
+  for i,file in enumerate(files):
+    if i % 20 == 0:
+      print(i,'/',len(files))
+    im = Image.open(file)
+    im = im.convert('RGB')
+    im = im.resize((200,200))
+    data = np.asarray(im)
+    x.append(data)
+    y.append(label)
+x = np.array(x)
+
+y = np.array(y)
+
+x = x.astype('float32')/ 255
+y = y.astype('int')
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.1)
+
+#######preprocessing###############
+
+
+  
