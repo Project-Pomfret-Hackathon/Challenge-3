@@ -8,11 +8,11 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import torch.optim as optim
 
-REBUILD_DATA = True #switch for not rebuding data every time
+REBUILD_DATA = True #switch (do not need to create data every train)
 
 class DogsVSCats():
     IMG_SIZE = 50
-    CATS = "PetImages/Cat" #give immages directory locations
+    CATS = "PetImages/Cat" #give unlabeled immages directory locations
     DOGS = "PetImages/Dog" #^^
     LABELS = {CATS: 0, DOGS: 1} #def dict labels with cats and dogs as keys with val's 1, 0
     training_data = []
@@ -21,16 +21,16 @@ class DogsVSCats():
 
     def make_training_data(self):
         for label in self.LABELS: #itterate over each 1/2 of directory
-            print(label) #either dog or cat
+            #print(label) #either dog or cat
             for f in tqdm(os.listdir(label)): #itterate for each immage in each dir
                 try:
-                    path = os.path.join(label, f) #def path as path to current img in loop
+                    path = os.path.join(label, f) #def new path to training set immages 
                     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE) #def current img var and read it as G.S
                     img = cv2.resize(img, (self.IMG_SIZE, self.IMG_SIZE)) #re-def current img as a 50,50
                     self.training_data.append([np.array(img), np.eye(2)[self.LABELS[label]]]) #add the tensor of the img and 1hot(for animal label) to class var list
 
 
-                    if label == self.CATS:  #itt count
+                    if label == self.CATS:  #itteracte for each class 
                         self.catcount += 1
                     if label == self.DOGS:
                         self.dogcount += 1
@@ -104,11 +104,12 @@ for epoch in range(EPOCS): ###run stuff through cpu
         batch_X = train_X[i:i+BATCH_SIZE].view(-1,1,50,50)
         batch_y = train_y[i:i+BATCH_SIZE]
 
-        net.zero_grad() ###**
+        net.zero_grad() 
         outputs = net(batch_X)
         loss = loss_function(outputs, batch_y)
         loss.backward()
         optimizer.step()
+       
 
 print(loss, 5) ##diff between predicted and actual (used for optimization)
 
